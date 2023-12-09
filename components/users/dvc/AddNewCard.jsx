@@ -9,7 +9,7 @@ const AddCard = (params) => {
   const [options, setOptions] = useState([]);
   const [error, setError] = useState("");
   const [isDataSaved, setIsDataSaved] = useState('theme');
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(2);
   const [card, setCard] = useState({
     name: "",
     category: "",
@@ -21,7 +21,7 @@ const AddCard = (params) => {
       .then((data) => {
         setOptions(data)
       }).catch((error) => {
-        console.log(data._id);
+        //console.log(data._id);
         setDvcId(data._id);
         setError("Failed to fetch data");
       });

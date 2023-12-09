@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Editor } from '@tinymce/tinymce-react';
+import Image from "next/image";
+import { Card } from "reactstrap";
 
 const AddCompanyDetails = (params) => {
   const router = useRouter();
@@ -13,44 +15,121 @@ const AddCompanyDetails = (params) => {
   const [clicked, setClicked] = useState(false);
   const [noteData, setNoteData] = useState("");
   const editorRef = useRef(null);
+  const companyLogoRef = useRef(null);
+  const brochureRef = useRef(null);
+  const contactQRCodeRef = useRef(null);
+
   const [card, setCard] = useState({
-    domainName:"",
+    imagePreview: "",
+    brochure: "",
+    contactQRCode: "",
+    company_logo: "",
+    domainName: "",
     companyName: "",
     companyEmail: "",
-    designation:"",
-    phone_no:"",
-    alternate_no:"",
-    whatsapp_no:"",
-    companyAddress:"",
-    businessLocation:"",
-    note:noteData,
-    establishmentDate:"",
+    designation: "",
+    phone_no: "",
+    alternate_no: "",
+    whatsapp_no: "",
+    companyAddress: "",
+    businessLocation: "",
+    note: noteData,
+    establishmentDate: "",
     userId: params.userId,
   });
-  const handleUpdateCard = async (event) => {``
-  event.preventDefault();
-  // validate task data
-  try {
-    const result = await updateCard(card);
-    //console.log(result);
-    toast.success("Your Theme is added !!", {
-      position: "top-center",
-    });
-
+  const handleClear = async (e) => {
     setCard({
-      name: "",
-      category: "",
-    });
-    setIsDataSaved('companyDetails');
-    setCurrentStep((prevStep) => prevStep + 1);
-  } catch (error) {
-    console.log(error);
-    toast.error("Theme not added !!", {
-      position: "top-center",
-    });
+      brochure: "",
+      contactQRCode: "",
+      company_logo: "",
+      domainName: "",
+      companyName: "",
+      companyEmail: "",
+      designation: "",
+      phone_no: "",
+      alternate_no: "",
+      whatsapp_no: "",
+      companyAddress: "",
+      businessLocation: "",
+      note: "",
+      establishmentDate: "",
+      userId: params.userId,
+    })
   }
-};
+  const handleUpdateCard = async (event) => {
+    ``
+    event.preventDefault();
+    // validate task data
+    try {
+      const result = await updateCard(card);
+      //console.log(result);
+      toast.success("Your Theme is added !!", {
+        position: "top-center",
+      });
 
+      setCard({
+        name: "",
+        category: "",
+      });
+
+      setIsDataSaved('companyDetails');
+      setCurrentStep((prevStep) => prevStep + 1);
+    } catch (error) {
+      console.log(error);
+      toast.error("Theme not added !!", {
+        position: "top-center",
+      });
+    }
+  };
+  
+  function useDisplayImage() {
+    const [result1, setResult1] = useState("");
+    const [result2, setResult2] = useState("");
+    const [result3, setResult3] = useState("");
+    if(companyLogoRef){
+
+    function uploader1(e) {
+      const companyLogoRef = e.target.files[0];
+      const reader = new FileReader();
+      reader.addEventListener("load", (e) => {
+          setResult1(e.target.result1);
+      });
+        reader.readAsDataURL(companyLogoRef);
+    }
+      return { result1, uploader1 };
+    }
+    if(contactQRCodeRef){
+      function uploader2(e) {
+        const contactQRCodeRef = e.target.files[0];
+  
+        const reader = new FileReader();
+        reader.addEventListener("load", (e) => {
+            setResult2(e.target.result2);
+        });
+          reader.readAsDataURL(contactQRCodeRef);
+      }
+      return { result2, uploader2 };
+    }
+    if(brochureRef){
+      function uploader3(e) {
+        const brochureRef = e.target.files[0];
+  
+        const reader = new FileReader();
+        reader.addEventListener("load", (e) => {
+            setResult3(e.target.result3);
+        });
+          reader.readAsDataURL(brochureRef);
+      }
+  
+
+      return { result3, uploader3 };
+    }
+     
+
+  }
+  const { result1, uploader1 } = useDisplayImage();
+  const { result2, uploader2 } = useDisplayImage();
+  const { result3, uploader3 } = useDisplayImage();
   return (
     <div className="flex flex-col text-left  ">
       <h1 className="text-xl font-medium title-font  text-gray-900 underline mb-10 ml-56">Company-Details</h1>
@@ -59,13 +138,30 @@ const AddCompanyDetails = (params) => {
           <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
             <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
               <div className="text-center">
-                <svg className="mx-auto h-12 w-12 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <path fillRule="evenodd" d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-5.16-5.159a1.5 1.5 0 00-2.12 0L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z" clipRule="evenodd" />
-                </svg>
+                {card.company_logo ? (
+                  <Image className="mx-auto h-12 w-12 text-gray-300" ref={companyLogoRef} src={result1}
+                    alt="" width="50" height="50"
+                  />
+                ) : (
+                  <svg className="mx-auto h-12 w-12 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path fillRule="evenodd" d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-5.16-5.159a1.5 1.5 0 00-2.12 0L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z" clipRule="evenodd" />
+                  </svg>
+
+                )
+                }
                 <div className="mt-4 flex text-sm leading-6 text-gray-600">
-                  <label htmlFor="file-upload" className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500">
+                  <label htmlFor="company_logo" className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500">
                     <span>Upload a Company Logo</span>
-                    <input id="file-upload" name="file-upload" type="file" className="sr-only appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" />
+                    <input
+                      onChange={(e) => {
+                        setCard({
+                          ...card,
+                          company_logo: e.target.files[0],
+                        });
+                        //setImage(e.target.files[0]);
+                        uploader1(e);
+                      }}
+                      id="company_logo" name="company_logo" type="file" className="sr-only appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" />
                   </label>
                   <p className="pl-1">or drag and drop</p>
                 </div>
@@ -76,13 +172,30 @@ const AddCompanyDetails = (params) => {
           <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
             <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
               <div className="text-center">
-                <svg className="mx-auto h-12 w-12 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <path fillRule="evenodd" d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-5.16-5.159a1.5 1.5 0 00-2.12 0L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z" clipRule="evenodd" />
-                </svg>
+              {card.contactQRCode ? (
+                  <Image className="mx-auto h-12 w-12 text-gray-300" ref={contactQRCodeRef} src={result2}
+                    alt="" width="50" height="50"
+                  />
+                ) : (
+                  <svg className="mx-auto h-12 w-12 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path fillRule="evenodd" d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-5.16-5.159a1.5 1.5 0 00-2.12 0L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z" clipRule="evenodd" />
+                  </svg>
+
+                )
+                }
                 <div className="mt-4 flex text-sm leading-6 text-gray-600">
-                  <label htmlFor="file-upload" className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500">
+                  <label htmlFor="contactQRCode" className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500">
                     <span>Upload a Contact QR Code</span>
-                    <input id="file-upload" name="file-upload" type="file" className="sr-only appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" />
+                    <input 
+                    onChange={(e) => {
+                      setCard({
+                        ...card,
+                        contactQRCode: e.target.files[0],
+                      });
+                      //setImage(e.target.files[0]);
+                      uploader2(e);
+                    }}
+                      id="contactQRCode" name="contactQRCode" type="file" className="sr-only appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" />
                   </label>
                   <p className="pl-1">or drag and drop</p>
                 </div>
@@ -96,13 +209,30 @@ const AddCompanyDetails = (params) => {
           <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
             <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
               <div className="text-center">
-                <svg className="mx-auto h-12 w-12 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <path fillRule="evenodd" d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-5.16-5.159a1.5 1.5 0 00-2.12 0L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z" clipRule="evenodd" />
-                </svg>
+                {card.brochure ? (
+                  <Image className="mx-auto h-12 w-12 text-gray-300" ref={brochureRef} src={result3}
+                    alt="" width="50" height="50"
+                  />
+                ) : (
+                  <svg className="mx-auto h-12 w-12 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path fillRule="evenodd" d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-5.16-5.159a1.5 1.5 0 00-2.12 0L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z" clipRule="evenodd" />
+                  </svg>
+
+                )
+                }
                 <div className="mt-4 flex text-sm leading-6 text-gray-600">
-                  <label htmlFor="file-upload" className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500">
+                  <label htmlFor="brochure" className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500">
                     <span>Upload a Brochure</span>
-                    <input id="file-upload" name="file-upload" type="file" className="sr-only appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" />
+                    <input 
+                    onChange={(e) => {
+                      setCard({
+                        ...card,
+                        brochure: e.target.files[0],
+                      });
+                      //setImage(e.target.files[0]);
+                      uploader3(e);
+                    }}
+                      id="brochure" name="brochure" type="file" className="sr-only appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" />
                   </label>
                   <p className="pl-1">or drag and drop</p>
                 </div>
@@ -123,13 +253,13 @@ const AddCompanyDetails = (params) => {
               Name
             </label>
             <input onChange={(event) => {
-                    setCard({
-                      ...card,
-                      companyName: event.target.value,
-                    });
-                  }}
-                  value={card.companyName}
-            className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="grid-city" type="text" placeholder="Albuquerque" />
+              setCard({
+                ...card,
+                companyName: event.target.value,
+              });
+            }}
+              value={card.companyName}
+              className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="grid-city" type="text" placeholder="Name" />
           </div>
           <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
             <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="grid-state">
@@ -137,13 +267,13 @@ const AddCompanyDetails = (params) => {
             </label>
             <div className="relative">
               <input onChange={(event) => {
-                    setCard({
-                      ...card,
-                      companyEmail: event.target.value,
-                    });
-                  }}
-                  value={card.companyEmail}
-              className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="grid-city" type="text" placeholder="Albuquerque" />
+                setCard({
+                  ...card,
+                  companyEmail: event.target.value,
+                });
+              }}
+                value={card.companyEmail}
+                className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="grid-city" type="text" placeholder="Email" />
             </div>
           </div>
           <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
@@ -151,13 +281,13 @@ const AddCompanyDetails = (params) => {
               Designation *
             </label>
             <input
-            onChange={(event) => {
-              setCard({
-                ...card,
-                designation: event.target.value,
-              });
-            }}
-            value={card.designation} className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="grid-zip" type="text" placeholder="90210" />
+              onChange={(event) => {
+                setCard({
+                  ...card,
+                  designation: event.target.value,
+                });
+              }}
+              value={card.designation} className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="grid-zip" type="text" placeholder="Designation" />
           </div>
         </div>
         <div className="flex flex-wrap -mx-3 mb-2">
@@ -166,12 +296,12 @@ const AddCompanyDetails = (params) => {
               Phone No. *
             </label>
             <input onChange={(event) => {
-                    setCard({
-                      ...card,
-                      phone_no: event.target.value,
-                    });
-                  }}
-                  value={card.phone_no} className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="grid-city" type="text" placeholder="Albuquerque" />
+              setCard({
+                ...card,
+                phone_no: event.target.value,
+              });
+            }}
+              value={card.phone_no} className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="grid-city" type="text" placeholder="Phone Number" />
           </div>
           <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
             <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" htmlFor="grid-state">
@@ -179,13 +309,13 @@ const AddCompanyDetails = (params) => {
             </label>
             <div className="relative">
               <input onChange={(event) => {
-                    setCard({
-                      ...card,
-                      alternate_no: event.target.value,
-                    });
-                  }}
-                  value={card.alternate_no}
-              className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="grid-city" type="text" placeholder="Albuquerque" />
+                setCard({
+                  ...card,
+                  alternate_no: event.target.value,
+                });
+              }}
+                value={card.alternate_no}
+                className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="grid-city" type="text" placeholder="Alternate number" />
 
             </div>
           </div>
@@ -194,13 +324,13 @@ const AddCompanyDetails = (params) => {
               Whatsapp No.*
             </label>
             <input onChange={(event) => {
-                    setCard({
-                      ...card,
-                      whatsapp_no: event.target.value,
-                    });
-                  }}
-                  value={card.whatsapp_no}
-            className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="grid-zip" type="text" placeholder="90210" />
+              setCard({
+                ...card,
+                whatsapp_no: event.target.value,
+              });
+            }}
+              value={card.whatsapp_no}
+              className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="grid-zip" type="text" placeholder="Whatsapp Number" />
           </div>
         </div>
         <div className="flex flex-wrap -mx-3 mb-6">
@@ -243,7 +373,7 @@ const AddCompanyDetails = (params) => {
               showIcon icon="fa fa-calendar"
               wrapperClassName="w-full p-0 block py-3 px-4 mb-3 focus:outline-none focus:bg-whiteresize rounded-md"
               className="appearance-none block w-full bg-gray-200 text-gray-700 border py-3 px-4 mb-3 focus:outline-none focus:bg-whiteresize rounded-md"
-                onChange={(event) => {
+              onChange={(event) => {
                 setCard({
                   ...card,
                   establishmentDate: event,
@@ -277,7 +407,7 @@ const AddCompanyDetails = (params) => {
             <div className="mt-2">
               <Editor
                 onEditorChange={(newText) => setNoteData(newText)}
-                apiKey='corm88rtq50km03chdbpu78h7wvhy54ar6bogzmo6myh20h7'
+                apiKey='5n08uqmwjx4vy3dtoe5gqcfjspln434th3o0omlnb3f12b7u'
                 onInit={(evt, editor) => editorRef.current = editor}
                 initialValue=""
                 init={{
@@ -293,7 +423,7 @@ const AddCompanyDetails = (params) => {
                     'alignright alignjustify | bullist numlist outdent indent | ' +
                     'removeformat | help',
                   content_style: 'body { background-color:#E5E7EB ; font-family:Helvetica,Arial,sans-serif; font-size:14px } '
-                  
+
                 }}
               />
             </div>
@@ -301,13 +431,13 @@ const AddCompanyDetails = (params) => {
         </div>
 
         <div className="mt-4 flex justify-center">
-                <button className="bg-blue-600 py-2 px-3 rounded-lg text-white hover:bg-blue-800">
-                  Add {" "}
-                </button>
-                <button className="bg-red-600 py-2 px-3 rounded-lg text-white hover:bg-red-800 ms-3">
-                  Clear
-                </button>
-              </div>
+          <button className="bg-blue-600 py-2 px-3 rounded-lg text-white hover:bg-blue-800">
+            Add {" "}
+          </button>
+          <button className="bg-red-600 py-2 px-3 rounded-lg text-white hover:bg-red-800 ms-3" onClick={handleClear}>
+            Clear
+          </button>
+        </div>
       </form>
     </div>
 
