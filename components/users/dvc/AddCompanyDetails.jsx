@@ -16,11 +16,9 @@ const AddCompanyDetails = (params) => {
   const [noteData, setNoteData] = useState("");
   const editorRef = useRef(null);
   const companyLogoRef = useRef(null);
-  const brochureRef = useRef(null);
   const contactQRCodeRef = useRef(null);
-
+  const brochureRef = useRef(null);
   const [card, setCard] = useState({
-    imagePreview: "",
     brochure: "",
     contactQRCode: "",
     company_logo: "",
@@ -37,6 +35,7 @@ const AddCompanyDetails = (params) => {
     establishmentDate: "",
     userId: params.userId,
   });
+  console.log(card);
   const handleClear = async (e) => {
     setCard({
       brochure: "",
@@ -81,55 +80,59 @@ const AddCompanyDetails = (params) => {
       });
     }
   };
-  
   function useDisplayImage() {
-    const [result1, setResult1] = useState("");
-    const [result2, setResult2] = useState("");
-    const [result3, setResult3] = useState("");
-    if(companyLogoRef){
+    const [result, setResult] = useState("");
 
-    function uploader1(e) {
-      const companyLogoRef = e.target.files[0];
+    function uploader(e) {
+      const imageFile = e.target.files[0];
+
       const reader = new FileReader();
       reader.addEventListener("load", (e) => {
-          setResult1(e.target.result1);
+        setResult(e.target.result);
       });
-        reader.readAsDataURL(companyLogoRef);
-    }
-      return { result1, uploader1 };
-    }
-    if(contactQRCodeRef){
-      function uploader2(e) {
-        const contactQRCodeRef = e.target.files[0];
-  
-        const reader = new FileReader();
-        reader.addEventListener("load", (e) => {
-            setResult2(e.target.result2);
-        });
-          reader.readAsDataURL(contactQRCodeRef);
-      }
-      return { result2, uploader2 };
-    }
-    if(brochureRef){
-      function uploader3(e) {
-        const brochureRef = e.target.files[0];
-  
-        const reader = new FileReader();
-        reader.addEventListener("load", (e) => {
-            setResult3(e.target.result3);
-        });
-          reader.readAsDataURL(brochureRef);
-      }
-  
 
-      return { result3, uploader3 };
+      reader.readAsDataURL(imageFile);
     }
-     
 
+    return { result, uploader };
   }
-  const { result1, uploader1 } = useDisplayImage();
-  const { result2, uploader2 } = useDisplayImage();
-  const { result3, uploader3 } = useDisplayImage();
+  function useDisplayImage1() {
+    const [result1, setResult1] = useState("");
+
+    function uploader1(e) {
+      const imageFile1 = e.target.files[0];
+
+      const reader = new FileReader();
+      reader.addEventListener("load", (e) => {
+        setResult1(e.target.result1);
+      });
+
+      reader.readAsDataURL(imageFile1);
+    }
+
+    return { result, uploader1 };
+  }
+  function useDisplayImage2() {
+    const [result2, setResult2] = useState("");
+
+    function uploader2(e) {
+      const imageFile2 = e.target.files[0];
+
+      const reader = new FileReader();
+      reader.addEventListener("load", (e) => {
+        setResult2(e.target.result2);
+      });
+
+      reader.readAsDataURL(imageFile2);
+    }
+
+    return { result2, uploader2 };
+  }
+
+
+  const { result, uploader } = useDisplayImage();
+  const { result1, uploader1 } = useDisplayImage1();
+  const { result2, uploader2 } = useDisplayImage2();
   return (
     <div className="flex flex-col text-left  ">
       <h1 className="text-xl font-medium title-font  text-gray-900 underline mb-10 ml-56">Company-Details</h1>
@@ -139,9 +142,8 @@ const AddCompanyDetails = (params) => {
             <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
               <div className="text-center">
                 {card.company_logo ? (
-                  <Image className="mx-auto h-12 w-12 text-gray-300" ref={companyLogoRef} src={result1}
-                    alt="" width="50" height="50"
-                  />
+                  <Image className="mx-auto h-12 w-12 text-gray-300" ref={companyLogoRef} src={result} 
+                    alt="" width="50" height="50"/>
                 ) : (
                   <svg className="mx-auto h-12 w-12 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                     <path fillRule="evenodd" d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-5.16-5.159a1.5 1.5 0 00-2.12 0L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z" clipRule="evenodd" />
@@ -153,14 +155,14 @@ const AddCompanyDetails = (params) => {
                   <label htmlFor="company_logo" className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500">
                     <span>Upload a Company Logo</span>
                     <input
-                      onChange={(e) => {
-                        setCard({
-                          ...card,
-                          company_logo: e.target.files[0],
-                        });
-                        //setImage(e.target.files[0]);
-                        uploader1(e);
-                      }}
+                     onChange={(e) => {
+                      setCard({
+                        ...card,
+                        company_logo: e.target.files[0],
+                      });
+                      uploader(e);
+                    }}
+                      
                       id="company_logo" name="company_logo" type="file" className="sr-only appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" />
                   </label>
                   <p className="pl-1">or drag and drop</p>
@@ -173,7 +175,7 @@ const AddCompanyDetails = (params) => {
             <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
               <div className="text-center">
               {card.contactQRCode ? (
-                  <Image className="mx-auto h-12 w-12 text-gray-300" ref={contactQRCodeRef} src={result2}
+                  <Image className="mx-auto h-12 w-12 text-gray-300"  ref={contactQRCodeRef} src={result1} 
                     alt="" width="50" height="50"
                   />
                 ) : (
@@ -192,8 +194,7 @@ const AddCompanyDetails = (params) => {
                         ...card,
                         contactQRCode: e.target.files[0],
                       });
-                      //setImage(e.target.files[0]);
-                      uploader2(e);
+                      uploader1(e);
                     }}
                       id="contactQRCode" name="contactQRCode" type="file" className="sr-only appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" />
                   </label>
@@ -210,7 +211,7 @@ const AddCompanyDetails = (params) => {
             <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
               <div className="text-center">
                 {card.brochure ? (
-                  <Image className="mx-auto h-12 w-12 text-gray-300" ref={brochureRef} src={result3}
+                  <Image className="mx-auto h-12 w-12 text-gray-300" ref={brochureRef} src={result2}
                     alt="" width="50" height="50"
                   />
                 ) : (
@@ -230,7 +231,7 @@ const AddCompanyDetails = (params) => {
                         brochure: e.target.files[0],
                       });
                       //setImage(e.target.files[0]);
-                      uploader3(e);
+                      uploader2(e);
                     }}
                       id="brochure" name="brochure" type="file" className="sr-only appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" />
                   </label>
